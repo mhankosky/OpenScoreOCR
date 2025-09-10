@@ -3,13 +3,15 @@ import pytesseract
 import time
 import os
 import sys
+import platform
 
 # Open Score OCR
 # Description: This is a tool that takes a video feed from a camera source (default webcam, specific webcam index, or Blackmagic DeckLink/WebPresenter via USB/Thunderbolt)
 # and extracts text from user-defined regions, writing each region's text to a separate file (box1.txt, box2.txt, etc.) in the 'outputs' subfolder at a user-set interval (1, 5, or 10 seconds).
-# This allows the extracted text to be imported into vMix or other programs for real-time display.
+# Each box is labeled with a number in the top-right corner. The extracted text can be imported into vMix or other programs for real-time display.
+# This tool is compatible with both macOS and Windows.
 
-# Instructions:
+# Instructions for macOS:
 # 1. Install Homebrew (if not already installed):
 #    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 #    Then add to PATH (Apple Silicon):
@@ -25,13 +27,37 @@ import sys
 #    python3 -c "import cv2; print(cv2.__version__)"
 #    python3 -c "import pytesseract; print(pytesseract.get_tesseract_version())"
 #    python3 -c "import cv2; print(cv2.getBuildInformation())" | grep GStreamer  # Ensure GStreamer: YES
-# 5. Ensure Blackmagic Desktop Video software is installed for DeckLink/WebPresenter (available at https://www.blackmagicdesign.com/products/decklink/downloads).
-# 6. Run this script: python3 open_score_ocr.py
-# 7. Follow prompts to select refresh rate (1, 5, or 10 seconds) and video source (default webcam, specific webcam index, or Blackmagic device).
-# 8. Click and drag to draw boxes over text areas in the video feed; each box is labeled with a number in the top-right corner.
-# 9. Press 'd' when done drawing boxes to start text extraction.
-# 10. Text from each box is written to 'outputs/box1.txt', 'outputs/box2.txt', etc., at the selected interval, suitable for import into vMix or similar programs.
-# 11. Press 'q' to quit.
+# 5. Ensure Blackmagic Desktop Video software is installed for DeckLink/WebPresenter (download from https://www.blackmagicdesign.com/products/decklink/downloads).
+
+# Instructions for Windows:
+# 1. Install Chocolatey (if not already installed, run in an Administrator PowerShell):
+#    Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+# 2. Install system dependencies using Chocolatey (in Administrator Command Prompt or PowerShell):
+#    choco install tesseract gstreamer gstreamer-devel -y
+#    Alternatively, download and install manually:
+#    - Tesseract: https://github.com/UB-Mannheim/tesseract/wiki (add to PATH, e.g., C:\Program Files\Tesseract-OCR)
+#    - GStreamer: https://gstreamer.freedesktop.org/download/ (install both runtime and development packages, e.g., gstreamer-1.0-x86_64-<version>.msi and gstreamer-1.0-devel-x86_64-<version>.msi)
+# 3. Install Python packages (in Command Prompt or PowerShell):
+#    python -m pip install --user opencv-python pytesseract
+# 4. Verify installations:
+#    tesseract --version
+#    python -c "import cv2; print(cv2.__version__)"
+#    python -c "import pytesseract; print(pytesseract.get_tesseract_version())"
+#    python -c "import cv2; print(cv2.getBuildInformation())" | findstr GStreamer  # Ensure GStreamer: YES
+# 5. Ensure Blackmagic Desktop Video software is installed for DeckLink/WebPresenter (download from https://www.blackmagicdesign.com/products/decklink/downloads).
+# 6. If Tesseract is not found by pytesseract, set the path explicitly in this script (uncomment and adjust):
+#    # pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
+# Run the script:
+#    python open_score_ocr.py
+# 1. Follow prompts to select refresh rate (1, 5, or 10 seconds) and video source (default webcam, specific webcam index, or Blackmagic device).
+# 2. Click and drag to draw boxes over text areas in the video feed; each box is labeled with a number in the top-right corner.
+# 3. Press 'd' when done drawing boxes to start text extraction.
+# 4. Text from each box is written to 'outputs/box1.txt', 'outputs/box2.txt', etc., at the selected interval, suitable for import into vMix or similar programs.
+# 5. Press 'q' to quit.
+
+# Uncomment and set Tesseract path for Windows if needed
+# pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 # Global variables
 drawing = False
