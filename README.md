@@ -1,6 +1,6 @@
 # Open Score OCR
 
-![Open Score OCR in action](https://via.placeholder.com/800x400.png?text=Open+Score+OCR+Demo) <!-- Replace with actual screenshot or demo image -->
+
 
 ## Overview
 
